@@ -1,0 +1,20 @@
+{
+  "name": "fancy-color",
+  "version": "0.0.1",
+  "description": "fancy color lib for art",
+  "main": "dist/index.js",
+  "module": "dist/index.es.js",
+  "repository": "git@github.com:ZhangYxY/fancy-color.git",
+  "author": "ZhangYxY <512224856@qq.com>",
+  "license": "MIT",
+  "scripts": {
+    "format": "find ./src/ -name '*.ts*' | xargs prettier --write --config ./.prettierrc --config-precedence file-override",
+    "build": "tsc -p ./tsconfig-build.json --module commonjs && rollup -c rollup.config.js"
+  },
+  "devDependencies": {
+    "prettier": "1.19.1",
+    "rollup": "^1.27.0",
+    "rollup-plugin-typescript2": "^0.25.2",
+    "typescript": "^3.7.2"
+  }
+}
