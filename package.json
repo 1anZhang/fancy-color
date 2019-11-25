@@ -4,13 +4,24 @@
   "description": "fancy color lib for art",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
+  "typings": "src/index",
   "repository": "git@github.com:ZhangYxY/fancy-color.git",
   "author": "ZhangYxY <512224856@qq.com>",
   "license": "MIT",
   "scripts": {
     "test": "yarn build && jest",
     "format": "find ./src/ -name '*.ts*' | xargs prettier --write --config ./.prettierrc --config-precedence file-override",
+    "prebuild": "rimraf dist",
+    "lint:fix": "eslint --fix",
+    "precommit": "lint-staged",
     "build": "tsc -p ./tsconfig-build.json --module commonjs && rollup -c rollup.config.js"
+  },
+  "lint-staged": {
+    "{src,__test__}/**/*.ts": [
+      "npm run format",
+      "npm run lint:fix",
+      "git add"
+    ]
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^2.8.0",
