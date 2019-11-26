@@ -1,5 +1,14 @@
 import { decodeColorString, decNumberToHexString } from './utils';
 
+export interface IColor {
+  r?: number;
+  g?: number;
+  b?: number;
+  a?: number;
+  h?: number;
+  s?: number;
+  l?: number;
+}
 export interface IRgbColor {
   r: number;
   g: number;
@@ -26,22 +35,22 @@ class Color {
   private _b: number;
   private _a: number;
 
-  constructor(color: IRgbColor | IRgbaColor | string) {
+  constructor(color: IColor | string) {
     if (color instanceof Color) {
       return color;
     }
-    if (color instanceof Object) {
-      this._r = color.r;
-      this._g = color.g;
-      this._b = color.b;
-      // this._a = color.a || 1;
-    } else {
+    if (typeof color === 'string') {
       const decodedColor = decodeColorString(color);
       this._r = decodedColor.r;
       this._g = decodedColor.g;
       this._b = decodedColor.b;
-      // this._a = decodedColor.a || 1;
     }
+    // if (typeof color === 'object') {
+    //   this._r = color.r;
+    //   this._g = color.g;
+    //   this._b = color.b;
+    //   this._a = color.a || 1;
+    // }
   }
 
   toHexString(allow3Char = false) {

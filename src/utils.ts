@@ -7,17 +7,17 @@ const hslaReg: RegExp = /^hsla\(\s*(\d{1,3}),\s*(\d{1,3})%,\s*(\d{1,3})%\s*,\s*(
 const hex3Reg: RegExp = /^#[a-fA-F0-9]{3}$/;
 const hex6Reg: RegExp = /^#[a-fA-F0-9]{6}$/;
 
-function decodeColorString(c: string): IRgbColor {
+function decodeColorString(c: string): IRgbColor | IRgbaColor {
   let tempRgbColor: IRgbColor = {
     r: 0,
     g: 0,
-    b: 0
+    b: 0,
   };
   let tempRgbaColor: IRgbaColor = {
     r: 0,
     g: 0,
     b: 0,
-    a: 1
+    a: 1,
   };
   if (hex3Reg.test(c)) {
     tempRgbColor.r = hexStringToDecNumber(c.slice(1, 2).repeat(2));
@@ -65,10 +65,10 @@ function decodeColorString(c: string): IRgbColor {
   } else if (hslReg.test(c)) {
     let colorResult: RegExpExecArray | null = hslReg.exec(c);
     let hslColor: IHslColor = {
-      h:colorResult ? parseInt(colorResult[1]) : -1,
-      s:colorResult ? parseInt(colorResult[2]) : -1,
-      l:colorResult ? parseInt(colorResult[3]) : -1,
-    }
+      h: colorResult ? parseInt(colorResult[1]) : -1,
+      s: colorResult ? parseInt(colorResult[2]) : -1,
+      l: colorResult ? parseInt(colorResult[3]) : -1,
+    };
     const isRightColor = checkHslColor(hslColor);
     if (isRightColor) {
       tempRgbColor = hslToRgb(hslColor);
@@ -79,17 +79,17 @@ function decodeColorString(c: string): IRgbColor {
   } else if (hslaReg.test(c)) {
     let colorResult: RegExpExecArray | null = hslaReg.exec(c);
     let hslaColor: IHslaColor = {
-      h:colorResult ? parseInt(colorResult[1]) : -1,
-      s:colorResult ? parseInt(colorResult[2]) : -1,
-      l:colorResult ? parseInt(colorResult[3]) : -1,
-      a:colorResult ? parseFloat(colorResult[4]) : -1
-    }
+      h: colorResult ? parseInt(colorResult[1]) : -1,
+      s: colorResult ? parseInt(colorResult[2]) : -1,
+      l: colorResult ? parseInt(colorResult[3]) : -1,
+      a: colorResult ? parseFloat(colorResult[4]) : -1,
+    };
     const isRightColor = checkHslaColor(hslaColor);
     if (isRightColor) {
-      tempRgbaColor = {...hslToRgb(hslaColor), a: hslaColor.a};
+      tempRgbaColor = { ...hslToRgb(hslaColor), a: hslaColor.a };
       return tempRgbaColor;
     } else {
-      throw new TypeError(`无法识别的rgb颜色: ${c}, 请输入正确的颜色`);
+      throw new TypeError(`无法识别的hsla颜色: ${c}, 请输入正确的颜色`);
     }
   } else {
     throw new TypeError(`暂不支持的颜色类型: ${c}`);
@@ -97,19 +97,37 @@ function decodeColorString(c: string): IRgbColor {
 }
 
 function checkRgbColor(color: IRgbColor): boolean {
-  return isRightColorRange(color.r) && isRightColorRange(color.g) && isRightColorRange(color.b);
+  return (
+    isRightColorRange(color.r) &&
+    isRightColorRange(color.g) &&
+    isRightColorRange(color.b)
+  );
 }
 
 function checkRgbaColor(color: IRgbaColor): boolean {
-  return isRightColorRange(color.r) && isRightColorRange(color.g) && isRightColorRange(color.b) && isRightAlphaRange(color.a);
+  return (
+    isRightColorRange(color.r) &&
+    isRightColorRange(color.g) &&
+    isRightColorRange(color.b) &&
+    isRightAlphaRange(color.a)
+  );
 }
 
 function checkHslColor(color: IHslColor): boolean {
-  return isRighthHueRange(color.h) && isRightPercentRange(color.s) && isRightPercentRange(color.l);
+  return (
+    isRighthHueRange(color.h) &&
+    isRightPercentRange(color.s) &&
+    isRightPercentRange(color.l)
+  );
 }
 
 function checkHslaColor(color: IHslaColor): boolean {
-  return isRighthHueRange(color.h) && isRightPercentRange(color.s) && isRightPercentRange(color.l) && isRightAlphaRange(color.a);
+  return (
+    isRighthHueRange(color.h) &&
+    isRightPercentRange(color.s) &&
+    isRightPercentRange(color.l) &&
+    isRightAlphaRange(color.a)
+  );
 }
 
 function isRightColorRange(n: number): boolean {
@@ -143,9 +161,8 @@ function hslToRgb(color: IHslColor): IRgbColor {
   return {
     r: 1,
     g: 1,
-    b: 1
+    b: 1,
   };
 }
-
 
 export { decodeColorString, hexStringToDecNumber, decNumberToHexString };
