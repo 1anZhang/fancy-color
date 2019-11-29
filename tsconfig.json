@@ -1,15 +1,30 @@
 {
-    "compilerOptions": {
-      "declaration": true,
-      "declarationDir": "./dist",
-      "module": "es6",
-      "removeComments": true,
-      "noImplicitAny": true,
-      "outDir": "./dist",
-      "target": "es5"
+  "include": ["src", "types", "test"],
+  "compilerOptions": {
+    "target": "es5",
+    "module": "esnext",
+    "lib": ["dom", "esnext"],
+    "importHelpers": true,
+    "declaration": true,
+    "sourceMap": true,
+    "rootDir": "./",
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "moduleResolution": "node",
+    "baseUrl": "./",
+    "paths": {
+      "*": ["src/*", "node_modules/*"]
     },
-    "include": [
-      "src/**/*"
-    ],
-    "exclude": ["node_modules", "__test__"]
+    "jsx": "react",
+    "esModuleInterop": true
   }
+}

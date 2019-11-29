@@ -30,10 +30,10 @@ export interface IHslaColor extends IHslColor {
 }
 
 class Color {
-  private _r: number;
-  private _g: number;
-  private _b: number;
-  private _a: number;
+  private _r!: number;
+  private _g!: number;
+  private _b!: number;
+  private _a!: number;
 
   constructor(color: IColor | string) {
     if (color instanceof Color) {

@@ -1,38 +1,41 @@
 {
   "name": "fancy-color",
-  "version": "0.0.1",
-  "description": "fancy color lib for art",
-  "main": "dist/index.js",
-  "module": "dist/index.es.js",
-  "typings": "src/index",
-  "repository": "git@github.com:ZhangYxY/fancy-color.git",
-  "author": "ZhangYxY <512224856@qq.com>",
+  "version": "0.1.0",
   "license": "MIT",
+  "author": "ZhangYxY <512224856@qq.com>",
+  "description": "fancy color lib for art",
+  "repository": "git@github.com:ZhangYxY/fancy-color.git",
+  "main": "dist/index.js",
+  "module": "dist/tsdx-demo.esm.js",
+  "typings": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "test": "yarn build && jest",
-    "format": "find ./src/ -name '*.ts*' | xargs prettier --write --config ./.prettierrc --config-precedence file-override",
-    "prebuild": "rimraf dist",
-    "lint:fix": "eslint --fix",
-    "precommit": "lint-staged",
-    "build": "tsc -p ./tsconfig-build.json --module commonjs && rollup -c rollup.config.js"
+    "start": "tsdx watch",
+    "build": "tsdx build",
+    "test": "tsdx test",
+    "lint": "tsdx lint"
   },
-  "lint-staged": {
-    "{src,__test__}/**/*.ts": [
-      "npm run format",
-      "npm run lint:fix",
-      "git add"
-    ]
+  "peerDependencies": {},
+  "husky": {
+    "hooks": {
+      "pre-commit": "tsdx lint"
+    }
+  },
+  "prettier": {
+    "printWidth": 80,
+    "singleQuote": true,
+    "useTabs": false,
+    "semi": true,
+    "tabWidth": 2,
+    "trailingComma": "es5"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^2.8.0",
-    "@typescript-eslint/parser": "^2.8.0",
-    "eslint": "^6.6.0",
-    "eslint-config-prettier": "^6.7.0",
-    "eslint-plugin-prettier": "^3.1.1",
-    "jest": "^24.9.0",
-    "prettier": "1.19.1",
-    "rollup": "^1.27.0",
-    "rollup-plugin-typescript2": "^0.25.2",
+    "@types/jest": "^24.0.23",
+    "husky": "^3.1.0",
+    "tsdx": "^0.11.0",
+    "tslib": "^1.10.0",
     "typescript": "^3.7.2"
   }
 }
