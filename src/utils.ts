@@ -2,17 +2,12 @@ import { IRgbColor, IHslColor, IRgbaColor, IHslaColor } from './color';
 
 const rgbReg: RegExp = /^rgb\(\s*(\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\s*\)$/;
 const rgbaReg: RegExp = /^rgba\(\s*(\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\s*,\s*(0?\.\d+)\s*\)$/;
-const hslReg: RegExp = /^hsl\(\s*(\d{1,3}),\s*(\d{1,3})%,\s*(\d{1,3})%\s*\)$/;
-const hslaReg: RegExp = /^hsla\(\s*(\d{1,3}),\s*(\d{1,3})%,\s*(\d{1,3})%\s*,\s*(0?\.\d+)\s*\)$/;
+const hslReg: RegExp = /^hsl\(\s*(\d{1,3}),\s*(\d{1,3}\.?\d*)%,\s*(\d{1,3}\.?\d*?)%\s*\)$/;
+const hslaReg: RegExp = /^hsla\(\s*(\d{1,3}),\s*(\d{1,3}\.?\d*?)%,\s*(\d{1,3}\.?\d*?)%\s*,\s*(0?\.\d+)\s*\)$/;
 const hex3Reg: RegExp = /^#[a-fA-F0-9]{3}$/;
 const hex6Reg: RegExp = /^#[a-fA-F0-9]{6}$/;
 
-function decodeColorString(c: string): IRgbColor | IRgbaColor {
-  let tempRgbColor: IRgbColor = {
-    r: 0,
-    g: 0,
-    b: 0,
-  };
+function decodeColorString(c: string): IRgbaColor {
   let tempRgbaColor: IRgbaColor = {
     r: 0,
     g: 0,
@@ -20,33 +15,33 @@ function decodeColorString(c: string): IRgbColor | IRgbaColor {
     a: 1,
   };
   if (hex3Reg.test(c)) {
-    tempRgbColor.r = hexStringToDecNumber(c.slice(1, 2).repeat(2));
-    tempRgbColor.g = hexStringToDecNumber(c.slice(2, 3).repeat(2));
-    tempRgbColor.b = hexStringToDecNumber(c.slice(3, 4).repeat(2));
-    const isRightColor = checkRgbColor(tempRgbColor);
+    tempRgbaColor.r = hexStringToDecNumber(c.slice(1, 2).repeat(2));
+    tempRgbaColor.g = hexStringToDecNumber(c.slice(2, 3).repeat(2));
+    tempRgbaColor.b = hexStringToDecNumber(c.slice(3, 4).repeat(2));
+    const isRightColor = checkRgbColor(tempRgbaColor);
     if (isRightColor) {
-      return tempRgbColor;
+      return tempRgbaColor;
     } else {
       throw new TypeError(`无法识别的hex颜色: ${c}, 请输入正确的颜色`);
     }
   } else if (hex6Reg.test(c)) {
-    tempRgbColor.r = hexStringToDecNumber(c.slice(1, 3));
-    tempRgbColor.g = hexStringToDecNumber(c.slice(3, 5));
-    tempRgbColor.b = hexStringToDecNumber(c.slice(5, 7));
-    const isRightColor = checkRgbColor(tempRgbColor);
+    tempRgbaColor.r = hexStringToDecNumber(c.slice(1, 3));
+    tempRgbaColor.g = hexStringToDecNumber(c.slice(3, 5));
+    tempRgbaColor.b = hexStringToDecNumber(c.slice(5, 7));
+    const isRightColor = checkRgbColor(tempRgbaColor);
     if (isRightColor) {
-      return tempRgbColor;
+      return tempRgbaColor;
     } else {
       throw new TypeError(`无法识别的hex颜色: ${c}, 请输入正确的颜色`);
     }
   } else if (rgbReg.test(c)) {
     let colorResult: RegExpExecArray | null = rgbReg.exec(c);
-    tempRgbColor.r = colorResult ? parseInt(colorResult[1]) : -1;
-    tempRgbColor.g = colorResult ? parseInt(colorResult[2]) : -1;
-    tempRgbColor.b = colorResult ? parseInt(colorResult[3]) : -1;
-    const isRightColor = checkRgbColor(tempRgbColor);
+    tempRgbaColor.r = colorResult ? parseInt(colorResult[1]) : -1;
+    tempRgbaColor.g = colorResult ? parseInt(colorResult[2]) : -1;
+    tempRgbaColor.b = colorResult ? parseInt(colorResult[3]) : -1;
+    const isRightColor = checkRgbColor(tempRgbaColor);
     if (isRightColor) {
-      return tempRgbColor;
+      return tempRgbaColor;
     } else {
       throw new TypeError(`无法识别的rgb颜色: ${c}, 请输入正确的颜色`);
     }
@@ -64,15 +59,16 @@ function decodeColorString(c: string): IRgbColor | IRgbaColor {
     }
   } else if (hslReg.test(c)) {
     let colorResult: RegExpExecArray | null = hslReg.exec(c);
-    let hslColor: IHslColor = {
+    let hslaColor: IHslaColor = {
       h: colorResult ? parseInt(colorResult[1]) : -1,
-      s: colorResult ? parseInt(colorResult[2]) : -1,
-      l: colorResult ? parseInt(colorResult[3]) : -1,
+      s: colorResult ? parseFloat(colorResult[2]) : -1,
+      l: colorResult ? parseFloat(colorResult[3]) : -1,
+      a: 1
     };
-    const isRightColor = checkHslColor(hslColor);
+    const isRightColor = checkHslColor(hslaColor);
     if (isRightColor) {
-      tempRgbColor = hslToRgb(hslColor);
-      return tempRgbColor;
+      tempRgbaColor = { ...hslToRgb(hslaColor), a: hslaColor.a };
+      return tempRgbaColor;
     } else {
       throw new TypeError(`无法识别的hsl颜色: ${c}, 请输入正确的颜色`);
     }
@@ -80,8 +76,8 @@ function decodeColorString(c: string): IRgbColor | IRgbaColor {
     let colorResult: RegExpExecArray | null = hslaReg.exec(c);
     let hslaColor: IHslaColor = {
       h: colorResult ? parseInt(colorResult[1]) : -1,
-      s: colorResult ? parseInt(colorResult[2]) : -1,
-      l: colorResult ? parseInt(colorResult[3]) : -1,
+      s: colorResult ? parseFloat(colorResult[2]) : -1,
+      l: colorResult ? parseFloat(colorResult[3]) : -1,
       a: colorResult ? parseFloat(colorResult[4]) : -1,
     };
     const isRightColor = checkHslaColor(hslaColor);
@@ -155,14 +151,76 @@ function decNumberToHexString(n: number): string {
   return hex.length === 1 ? '0' + hex : hex;
 }
 
+/**
+ * Converts an HSL color value to RGB. Conversion formula
+ * adapted from http://en.wikipedia.org/wiki/HSL_color_space.
+ * Assumes h, s, and l are contained in the set [0, 1] and
+ * returns r, g, and b in the set [0, 255].
+ *
+ * @param   Number  h       The hue
+ * @param   Number  s       The saturation
+ * @param   Number  l       The lightness
+ * @return  Array           The RGB representation
+ */
 function hslToRgb(color: IHslColor): IRgbColor {
-  // todo hsl color convert to rgb color
-  color = color;
-  return {
-    r: 1,
-    g: 1,
-    b: 1,
-  };
+  let { h, s, l } = color;
+  h = h / 360;
+  s = s / 100;
+  l = l / 100;
+  let r, g, b;
+  if(s == 0){
+      r = g = b = l; // achromatic
+  }else{
+      const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+      const p = 2 * l - q;
+      r = hue2rgb(p, q, h + 1/3);
+      g = hue2rgb(p, q, h);
+      b = hue2rgb(p, q, h - 1/3);
+  }
+
+  return {r:Number((r * 255).toFixed(0)), g: Number((g * 255).toFixed(0)), b: Number((b * 255).toFixed(0))};
 }
 
-export { decodeColorString, hexStringToDecNumber, decNumberToHexString };
+function hue2rgb(p: number, q: number, t: number): number{
+  if(t < 0) t += 1;
+  if(t > 1) t -= 1;
+  if(t < 1/6) return p + (q - p) * 6 * t;
+  if(t < 1/2) return q;
+  if(t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+  return p;
+}
+
+function rgbToHsl(color: IRgbColor, precision = 0): IHslColor {
+  const r: number = color.r / 255;
+  const g: number = color.g / 255;
+  const b: number = color.b / 255;
+  const max: number = Math.max(r, g, b);
+  const min: number = Math.min(r, g, b);
+  const average: number = (max + min) / 2;
+  let h:number = 0, s:number = 0, l:number = average;
+  if (max === min) {
+    h = s = 0;
+  } else {
+    const d:number = max - min;
+    s = l > 0.5 ? d / (2 - 2 * average) : d / (2 * average);
+    switch (max) {
+      case r:
+        h = ((g - b) / d) * 60 + (g < b ? 360 : 0);
+        break;
+      case g:
+        h = ((b - r) / d) * 60 + 120;
+        break;
+      case b:
+        h = ((r - g) / d) * 60 + 240;
+        break;
+      default:
+    }
+  }
+  h = Math.round(h);
+  s = Number((s * 100).toFixed(precision));
+  l = Number((l * 100).toFixed(precision));
+
+  return { h, s, l };
+}
+
+export { decodeColorString, hexStringToDecNumber, decNumberToHexString, hslToRgb, rgbToHsl };
