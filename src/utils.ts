@@ -157,7 +157,7 @@ function hslToRgb(color: IHslColor): IRgbColor {
   s = s / 100;
   l = l / 100;
   let r, g, b;
-  if (s == 0) {
+  if (s === 0) {
     r = g = b = l; // achromatic
   } else {
     const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
