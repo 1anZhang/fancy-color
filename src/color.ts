@@ -57,8 +57,8 @@ class Color {
         const hsl: IHslColor = {
           h: color.h,
           s: color.s,
-          l: color.l
-        }
+          l: color.l,
+        };
         const rgb = hslToRgb(hsl);
         this._r = rgb.r;
         this._g = rgb.g;
@@ -97,8 +97,8 @@ class Color {
     const rgb: IRgbColor = {
       r: this._r,
       g: this._g,
-      b: this._b
-    }
+      b: this._b,
+    };
     const hsl = rgbToHsl(rgb, precision);
     return `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`;
   }
@@ -107,8 +107,8 @@ class Color {
     const rgb: IRgbColor = {
       r: this._r,
       g: this._g,
-      b: this._b
-    }
+      b: this._b,
+    };
     const hsl = rgbToHsl(rgb, precision);
     return `hsla(${hsl.h}, ${hsl.s}%, ${hsl.l}%, ${this._a})`;
   }
@@ -117,8 +117,8 @@ class Color {
     return {
       r: this._r,
       g: this._g,
-      b: this._b
-    }
+      b: this._b,
+    };
   }
 
   tint(percentage: number) {
@@ -172,7 +172,6 @@ class Color {
     b = Math.floor(b) + originColor.b;
     return new Color({ r, g, b });
   }
-
 }
 
 export default Color;

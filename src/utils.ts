@@ -63,7 +63,7 @@ function decodeColorString(c: string): IRgbaColor {
       h: colorResult ? parseInt(colorResult[1]) : -1,
       s: colorResult ? parseFloat(colorResult[2]) : -1,
       l: colorResult ? parseFloat(colorResult[3]) : -1,
-      a: 1
+      a: 1,
     };
     const isRightColor = checkHslColor(hslaColor);
     if (isRightColor) {
@@ -93,28 +93,17 @@ function decodeColorString(c: string): IRgbaColor {
 }
 
 function checkRgbColor(color: IRgbColor): boolean {
-  return (
-    isRightColorRange(color.r) &&
-    isRightColorRange(color.g) &&
-    isRightColorRange(color.b)
-  );
+  return isRightColorRange(color.r) && isRightColorRange(color.g) && isRightColorRange(color.b);
 }
 
 function checkRgbaColor(color: IRgbaColor): boolean {
   return (
-    isRightColorRange(color.r) &&
-    isRightColorRange(color.g) &&
-    isRightColorRange(color.b) &&
-    isRightAlphaRange(color.a)
+    isRightColorRange(color.r) && isRightColorRange(color.g) && isRightColorRange(color.b) && isRightAlphaRange(color.a)
   );
 }
 
 function checkHslColor(color: IHslColor): boolean {
-  return (
-    isRighthHueRange(color.h) &&
-    isRightPercentRange(color.s) &&
-    isRightPercentRange(color.l)
-  );
+  return isRighthHueRange(color.h) && isRightPercentRange(color.s) && isRightPercentRange(color.l);
 }
 
 function checkHslaColor(color: IHslaColor): boolean {
@@ -168,25 +157,29 @@ function hslToRgb(color: IHslColor): IRgbColor {
   s = s / 100;
   l = l / 100;
   let r, g, b;
-  if(s == 0){
-      r = g = b = l; // achromatic
-  }else{
-      const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-      const p = 2 * l - q;
-      r = hue2rgb(p, q, h + 1/3);
-      g = hue2rgb(p, q, h);
-      b = hue2rgb(p, q, h - 1/3);
+  if (s == 0) {
+    r = g = b = l; // achromatic
+  } else {
+    const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+    const p = 2 * l - q;
+    r = hue2rgb(p, q, h + 1 / 3);
+    g = hue2rgb(p, q, h);
+    b = hue2rgb(p, q, h - 1 / 3);
   }
 
-  return {r:Number((r * 255).toFixed(0)), g: Number((g * 255).toFixed(0)), b: Number((b * 255).toFixed(0))};
+  return {
+    r: Number((r * 255).toFixed(0)),
+    g: Number((g * 255).toFixed(0)),
+    b: Number((b * 255).toFixed(0)),
+  };
 }
 
-function hue2rgb(p: number, q: number, t: number): number{
-  if(t < 0) t += 1;
-  if(t > 1) t -= 1;
-  if(t < 1/6) return p + (q - p) * 6 * t;
-  if(t < 1/2) return q;
-  if(t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+function hue2rgb(p: number, q: number, t: number): number {
+  if (t < 0) t += 1;
+  if (t > 1) t -= 1;
+  if (t < 1 / 6) return p + (q - p) * 6 * t;
+  if (t < 1 / 2) return q;
+  if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
   return p;
 }
 
@@ -197,11 +190,13 @@ function rgbToHsl(color: IRgbColor, precision = 0): IHslColor {
   const max: number = Math.max(r, g, b);
   const min: number = Math.min(r, g, b);
   const average: number = (max + min) / 2;
-  let h:number = 0, s:number = 0, l:number = average;
+  let h: number = 0,
+    s: number = 0,
+    l: number = average;
   if (max === min) {
     h = s = 0;
   } else {
-    const d:number = max - min;
+    const d: number = max - min;
     s = l > 0.5 ? d / (2 - 2 * average) : d / (2 * average);
     switch (max) {
       case r:
