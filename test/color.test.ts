@@ -77,6 +77,10 @@ test('test input color error', () => {
 
 test('test special conditions', () => {
   expect(fancyColor('#fff').toHexString()).toBe('#ffffff');
-  expect(fancyColor({ h: 233, s: 0, l: 33 }).toHexString()).toBe('#545454');
+  expect(fancyColor('#000').toHexString()).toBe('#000000');
+  expect(fancyColor('rgb(0, 0, 0)').toHexString()).toBe('#000000');
+  expect(fancyColor('hsl(0, 0%, 0%)').toHexString()).toBe('#000000');
+  expect(fancyColor({ r: 0, g: 0, b: 0 }).toHexString()).toBe('#000000');
+  expect(fancyColor({ h: 360, s: 0, l: 33 }).toHexString()).toBe('#545454');
   expect(fancyColor('rgb(66, 66, 66)').toHslString()).toBe('hsl(0, 0%, 25.9%)');
 })
