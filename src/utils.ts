@@ -1,94 +1,98 @@
 import { IRgbColor, IHslColor, IRgbaColor, IHslaColor } from './color';
 
 const rgbReg: RegExp = /^rgb\(\s*(\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\s*\)$/;
-const rgbaReg: RegExp = /^rgba\(\s*(\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\s*,\s*(0?\.\d+)\s*\)$/;
-const hslReg: RegExp = /^hsl\(\s*(\d{1,3}),\s*(\d{1,3}\.?\d*)%,\s*(\d{1,3}\.?\d*?)%\s*\)$/;
-const hslaReg: RegExp = /^hsla\(\s*(\d{1,3}),\s*(\d{1,3}\.?\d*?)%,\s*(\d{1,3}\.?\d*?)%\s*,\s*(0?\.\d+)\s*\)$/;
+const rgbaReg: RegExp = /^rgba\(\s*(\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\s*,\s*(0?\.?\d+)\s*\)$/;
+const hslReg: RegExp = /^hsl\(\s*(\d{1,3}),\s*(\d{1,3}\.?\d*)%?,\s*(\d{1,3}\.?\d*?)%?\s*\)$/;
+const hslaReg: RegExp = /^hsla\(\s*(\d{1,3}),\s*(\d{1,3}\.?\d*?)%?,\s*(\d{1,3}\.?\d*?)%?\s*,\s*(0?\.?\d+)\s*\)$/;
 const hex3Reg: RegExp = /^#[a-fA-F0-9]{3}$/;
 const hex6Reg: RegExp = /^#[a-fA-F0-9]{6}$/;
 
 function decodeColorString(c: string): IRgbaColor {
   let tempRgbaColor: IRgbaColor = {
-    r: 0,
-    g: 0,
-    b: 0,
+    r: -1,
+    g: -1,
+    b: -1,
     a: 1,
+  };
+  let tempHslaColor: IHslaColor = {
+    h: -1,
+    s: -1,
+    l: -1,
+    a: 1
   };
   if (hex3Reg.test(c)) {
     tempRgbaColor.r = hexStringToDecNumber(c.slice(1, 2).repeat(2));
     tempRgbaColor.g = hexStringToDecNumber(c.slice(2, 3).repeat(2));
     tempRgbaColor.b = hexStringToDecNumber(c.slice(3, 4).repeat(2));
-    const isRightColor = checkRgbColor(tempRgbaColor);
-    if (isRightColor) {
-      return tempRgbaColor;
-    } else {
-      throw new TypeError(`无法识别的hex颜色: ${c}, 请输入正确的颜色`);
-    }
+    return tempRgbaColor;
   } else if (hex6Reg.test(c)) {
     tempRgbaColor.r = hexStringToDecNumber(c.slice(1, 3));
     tempRgbaColor.g = hexStringToDecNumber(c.slice(3, 5));
     tempRgbaColor.b = hexStringToDecNumber(c.slice(5, 7));
-    const isRightColor = checkRgbColor(tempRgbaColor);
-    if (isRightColor) {
-      return tempRgbaColor;
-    } else {
-      throw new TypeError(`无法识别的hex颜色: ${c}, 请输入正确的颜色`);
-    }
+    return tempRgbaColor;
   } else if (rgbReg.test(c)) {
     let colorResult: RegExpExecArray | null = rgbReg.exec(c);
-    tempRgbaColor.r = colorResult ? parseInt(colorResult[1]) : -1;
-    tempRgbaColor.g = colorResult ? parseInt(colorResult[2]) : -1;
-    tempRgbaColor.b = colorResult ? parseInt(colorResult[3]) : -1;
+    if (colorResult !== null) {
+      tempRgbaColor.r = parseInt(colorResult[1]);
+      tempRgbaColor.g = parseInt(colorResult[2]);
+      tempRgbaColor.b = parseInt(colorResult[3]);
+    }
     const isRightColor = checkRgbColor(tempRgbaColor);
     if (isRightColor) {
       return tempRgbaColor;
     } else {
-      throw new TypeError(`无法识别的rgb颜色: ${c}, 请输入正确的颜色`);
+      throw new Error(`rgb() color input error: ${c}, please check the input`);
     }
   } else if (rgbaReg.test(c)) {
     let colorResult: RegExpExecArray | null = rgbaReg.exec(c);
-    tempRgbaColor.r = colorResult ? parseInt(colorResult[1]) : -1;
-    tempRgbaColor.g = colorResult ? parseInt(colorResult[2]) : -1;
-    tempRgbaColor.b = colorResult ? parseInt(colorResult[3]) : -1;
-    tempRgbaColor.a = colorResult ? parseFloat(colorResult[4]) : -1;
+    if (colorResult !== null) {
+      tempRgbaColor.r = parseInt(colorResult[1]);
+      tempRgbaColor.g = parseInt(colorResult[2]);
+      tempRgbaColor.b = parseInt(colorResult[3]);
+      tempRgbaColor.a = parseFloat(colorResult[4]);
+    }
     const isRightColor = checkRgbaColor(tempRgbaColor);
     if (isRightColor) {
       return tempRgbaColor;
     } else {
-      throw new TypeError(`无法识别的rgba颜色: ${c}, 请输入正确的颜色`);
+      throw new Error(`rgba() color input error: ${c}, please check the input`);
     }
   } else if (hslReg.test(c)) {
     let colorResult: RegExpExecArray | null = hslReg.exec(c);
-    let hslaColor: IHslaColor = {
-      h: colorResult ? parseInt(colorResult[1]) : -1,
-      s: colorResult ? parseFloat(colorResult[2]) : -1,
-      l: colorResult ? parseFloat(colorResult[3]) : -1,
-      a: 1,
-    };
-    const isRightColor = checkHslColor(hslaColor);
+    if (colorResult !== null) {
+      tempHslaColor = {
+        h: parseInt(colorResult[1]),
+        s: parseFloat(colorResult[2]),
+        l: parseFloat(colorResult[3]),
+        a: 1,
+      };
+    }
+    const isRightColor = checkHslColor(tempHslaColor);
     if (isRightColor) {
-      tempRgbaColor = { ...hslToRgb(hslaColor), a: hslaColor.a };
+      tempRgbaColor = { ...hslToRgb(tempHslaColor), a: tempHslaColor.a };
       return tempRgbaColor;
     } else {
-      throw new TypeError(`无法识别的hsl颜色: ${c}, 请输入正确的颜色`);
+      throw new Error(`hsl() color input error: ${c}, please check the input`);
     }
   } else if (hslaReg.test(c)) {
     let colorResult: RegExpExecArray | null = hslaReg.exec(c);
-    let hslaColor: IHslaColor = {
-      h: colorResult ? parseInt(colorResult[1]) : -1,
-      s: colorResult ? parseFloat(colorResult[2]) : -1,
-      l: colorResult ? parseFloat(colorResult[3]) : -1,
-      a: colorResult ? parseFloat(colorResult[4]) : -1,
-    };
-    const isRightColor = checkHslaColor(hslaColor);
+    if (colorResult !== null) {
+      tempHslaColor = {
+        h: parseInt(colorResult[1]),
+        s: parseFloat(colorResult[2]),
+        l: parseFloat(colorResult[3]),
+        a: parseFloat(colorResult[4]),
+      };
+    }
+    const isRightColor = checkHslaColor(tempHslaColor);
     if (isRightColor) {
-      tempRgbaColor = { ...hslToRgb(hslaColor), a: hslaColor.a };
+      tempRgbaColor = { ...hslToRgb(tempHslaColor), a: tempHslaColor.a };
       return tempRgbaColor;
     } else {
-      throw new TypeError(`无法识别的hsla颜色: ${c}, 请输入正确的颜色`);
+      throw new Error(`hsla() color input error: ${c}, please check the input`);
     }
   } else {
-    throw new TypeError(`暂不支持的颜色类型: ${c}`);
+    throw new Error(`unsupported color type: ${c}`);
   }
 }
 
@@ -157,6 +161,7 @@ function hslToRgb(color: IHslColor): IRgbColor {
   s = s / 100;
   l = l / 100;
   let r, g, b;
+
   if (s === 0) {
     r = g = b = l; // achromatic
   } else {
@@ -218,4 +223,8 @@ function rgbToHsl(color: IRgbColor, precision = 0): IHslColor {
   return { h, s, l };
 }
 
-export { decodeColorString, hexStringToDecNumber, decNumberToHexString, hslToRgb, rgbToHsl };
+function isNotNull(p: any): boolean {
+  return p != null;
+}
+
+export { decodeColorString, hexStringToDecNumber, decNumberToHexString, hslToRgb, rgbToHsl, checkRgbColor, checkHslColor, isNotNull };

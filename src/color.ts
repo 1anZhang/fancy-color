@@ -1,4 +1,4 @@
-import { decodeColorString, decNumberToHexString, hslToRgb, rgbToHsl } from './utils';
+import { decodeColorString, decNumberToHexString, hslToRgb, rgbToHsl, checkRgbColor, checkHslColor, isNotNull } from './utils';
 
 export interface IColor {
   r?: number;
@@ -35,7 +35,8 @@ class Color {
   private _b: number = 0;
   private _a: number = 1;
 
-  constructor(color: IColor | string) {
+  constructor(color: Color | IColor | string) {
+
     if (color instanceof Color) {
       return color;
     }
@@ -47,28 +48,44 @@ class Color {
       this._a = decodedColor.a;
     }
     if (typeof color === 'object') {
-      if (color.r && color.g && color.b) {
-        this._r = color.r;
-        this._g = color.g;
-        this._b = color.b;
+      if (isNotNull(color.r) && isNotNull(color.g) && isNotNull(color.b)) {
+        const tempRgbColor: IRgbColor = {
+          r: color.r || 0,
+          g: color.g || 0,
+          b: color.b || 0
+        }
+        const isRightColor = checkRgbColor(tempRgbColor);
+        if (isRightColor) {
+          this._r = tempRgbColor.r;
+          this._g = tempRgbColor.g;
+          this._b = tempRgbColor.b;
+        } else {
+          throw new Error(`rgb color input error: ${JSON.stringify(color)}, please check the input`);
+        }
       }
 
-      if (color.h && color.s && color.l) {
+      if (isNotNull(color.h) && isNotNull(color.s) && isNotNull(color.l)) {
         const hsl: IHslColor = {
-          h: color.h,
-          s: color.s,
-          l: color.l,
+          h: color.h || 0,
+          s: color.s || 0,
+          l: color.l || 0
         };
-        const rgb = hslToRgb(hsl);
-        this._r = rgb.r;
-        this._g = rgb.g;
-        this._b = rgb.b;
+        const isRightColor = checkHslColor(hsl);
+        if (isRightColor) {
+          const rgb = hslToRgb(hsl);
+          this._r = rgb.r;
+          this._g = rgb.g;
+          this._b = rgb.b;
+        } else {
+          throw new Error(`hsl color input error: ${JSON.stringify(color)}, please check the input`);
+        }
       }
 
       if (color.a) {
         this._a = color.a;
       }
     }
+    return this;
   }
 
   toHexString(allow3Char = false): string {
@@ -86,14 +103,14 @@ class Color {
   }
 
   toRgbString(): string {
-    return `rgb(${this._r}, ${this._g}, ${this._b}`;
+    return `rgb(${this._r}, ${this._g}, ${this._b})`;
   }
 
   toRgbaString(): string {
     return `rgba(${this._r}, ${this._g}, ${this._b}, ${this._a})`;
   }
 
-  toHslString(precision = 0): string {
+  toHslString(precision = 1): string {
     const rgb: IRgbColor = {
       r: this._r,
       g: this._g,
@@ -103,7 +120,7 @@ class Color {
     return `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`;
   }
 
-  toHslaString(precision = 0): string {
+  toHslaString(precision = 1): string {
     const rgb: IRgbColor = {
       r: this._r,
       g: this._g,
@@ -121,6 +138,15 @@ class Color {
     };
   }
 
+  getRgbaObject(): IRgbaColor {
+    return {
+      r: this._r,
+      g: this._g,
+      b: this._b,
+      a: this._a,
+    };
+  }
+
   tint(percentage: number) {
     return Color.tint(this.getRgbObject(), percentage);
   }
@@ -129,7 +155,7 @@ class Color {
     return Color.shade(this.getRgbObject(), percentage);
   }
 
-  mix(targetColor: IRgbColor, percentage: number) {
+  mix(targetColor: IRgbColor | string, percentage: number) {
     return Color.mix(this.getRgbObject(), targetColor, percentage);
   }
 
@@ -155,21 +181,45 @@ class Color {
     ];
   }
 
-  static tint(color: IRgbColor, percentage: number) {
-    return Color.mix(new Color('#fff').getRgbObject(), color, percentage);
+  static tint(color: IRgbColor | string, percentage: number) {
+    let c: IRgbColor;
+    if (typeof color === 'string') {
+      c = new Color(color).getRgbObject();
+    } else {
+      c = color;
+    }
+    return Color.mix(new Color('#fff').getRgbObject(), c, percentage);
   }
 
-  static shade(color: IRgbColor, percentage: number) {
-    return Color.mix(color, new Color('#000').getRgbObject(), percentage);
+  static shade(color: IRgbColor | string, percentage: number) {
+    let c: IRgbColor;
+    if (typeof color === 'string') {
+      c = new Color(color).getRgbObject();
+    } else {
+      c = color;
+    }
+    return Color.mix(c, new Color('#000').getRgbObject(), percentage);
   }
 
-  static mix(originColor: IRgbColor, targetColor: IRgbColor, percentage: number) {
-    let r = (targetColor.r - originColor.r) * (percentage / 100);
-    let g = (targetColor.g - originColor.g) * (percentage / 100);
-    let b = (targetColor.b - originColor.b) * (percentage / 100);
-    r = Math.floor(r) + originColor.r;
-    g = Math.floor(g) + originColor.g;
-    b = Math.floor(b) + originColor.b;
+  static mix(originColor: IRgbColor | string, targetColor: IRgbColor | string, percentage: number) {
+    let oc: IRgbColor;
+    let tc: IRgbColor;
+    if (typeof originColor === 'string') {
+      oc = new Color(originColor).getRgbObject();
+    } else {
+      oc = originColor;
+    }
+    if (typeof targetColor === 'string') {
+      tc = new Color(targetColor).getRgbObject();
+    } else {
+      tc = targetColor;
+    }
+    let r = (tc.r - oc.r) * (percentage / 100);
+    let g = (tc.g - oc.g) * (percentage / 100);
+    let b = (tc.b - oc.b) * (percentage / 100);
+    r = Math.floor(r) + oc.r;
+    g = Math.floor(g) + oc.g;
+    b = Math.floor(b) + oc.b;
     return new Color({ r, g, b });
   }
 }
