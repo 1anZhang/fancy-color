@@ -9,5 +9,4 @@ fancyColor.mix = Color.mix;
 fancyColor.shade = Color.shade;
 fancyColor.tint = Color.tint;
 
-
 export default fancyColor;
