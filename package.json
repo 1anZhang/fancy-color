@@ -15,7 +15,7 @@
     "start": "tsdx watch",
     "build": "tsdx build",
     "test": "tsdx test --coverage",
-    "format": "find ./src/ -name '*.ts*' | xargs prettier --write --config ./.prettierrc --config-precedence file-override",
+    "format": "find ./src/ ./test/. -name '*.ts*' | xargs prettier --write --config ./.prettierrc --config-precedence file-override",
     "lint": "tsdx lint"
   },
   "peerDependencies": {},
