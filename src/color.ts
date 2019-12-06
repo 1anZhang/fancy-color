@@ -1,4 +1,12 @@
-import { decodeColorString, decNumberToHexString, hslToRgb, rgbToHsl, checkRgbColor, checkHslColor, isNotNull } from './utils';
+import {
+  decodeColorString,
+  decNumberToHexString,
+  hslToRgb,
+  rgbToHsl,
+  checkRgbColor,
+  checkHslColor,
+  isNotNull,
+} from './utils';
 
 export interface IColor {
   r?: number;
@@ -36,7 +44,6 @@ class Color {
   private _a: number = 1;
 
   constructor(color: Color | IColor | string) {
-
     if (color instanceof Color) {
       return color;
     }
@@ -52,8 +59,8 @@ class Color {
         const tempRgbColor: IRgbColor = {
           r: color.r || 0,
           g: color.g || 0,
-          b: color.b || 0
-        }
+          b: color.b || 0,
+        };
         const isRightColor = checkRgbColor(tempRgbColor);
         if (isRightColor) {
           this._r = tempRgbColor.r;
@@ -68,7 +75,7 @@ class Color {
         const hsl: IHslColor = {
           h: color.h || 0,
           s: color.s || 0,
-          l: color.l || 0
+          l: color.l || 0,
         };
         const isRightColor = checkHslColor(hsl);
         if (isRightColor) {

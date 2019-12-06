@@ -18,7 +18,7 @@ function decodeColorString(c: string): IRgbaColor {
     h: -1,
     s: -1,
     l: -1,
-    a: 1
+    a: 1,
   };
   if (hex3Reg.test(c)) {
     tempRgbaColor.r = hexStringToDecNumber(c.slice(1, 2).repeat(2));
@@ -227,4 +227,13 @@ function isNotNull(p: any): boolean {
   return p != null;
 }
 
-export { decodeColorString, hexStringToDecNumber, decNumberToHexString, hslToRgb, rgbToHsl, checkRgbColor, checkHslColor, isNotNull };
+export {
+  decodeColorString,
+  hexStringToDecNumber,
+  decNumberToHexString,
+  hslToRgb,
+  rgbToHsl,
+  checkRgbColor,
+  checkHslColor,
+  isNotNull,
+};
