@@ -8,5 +8,7 @@ function fancyColor(color: Color | IColor | string) {
 fancyColor.mix = Color.mix;
 fancyColor.shade = Color.shade;
 fancyColor.tint = Color.tint;
+fancyColor.equal = Color.equal;
+fancyColor.random = Color.random;
 
 export default fancyColor;

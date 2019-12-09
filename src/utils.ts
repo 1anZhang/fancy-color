@@ -227,6 +227,10 @@ function isNotNull(p: any): boolean {
   return p != null;
 }
 
+function randomRgb(): number {
+  return Math.round(Math.random() * 255);
+}
+
 export {
   decodeColorString,
   hexStringToDecNumber,
@@ -236,4 +240,5 @@ export {
   checkRgbColor,
   checkHslColor,
   isNotNull,
+  randomRgb,
 };

@@ -6,6 +6,7 @@ import {
   checkRgbColor,
   checkHslColor,
   isNotNull,
+  randomRgb,
 } from './utils';
 
 export interface IColor {
@@ -186,6 +187,18 @@ class Color {
       this.shade(60).toHexString(),
       this.shade(80).toHexString(),
     ];
+  }
+
+  static equal(color1: IColor | string, color2: IColor | string) {
+    return new Color(color1).toHexString() === new Color(color2).toHexString();
+  }
+
+  static random(): Color {
+    return new Color({
+      r: randomRgb(),
+      g: randomRgb(),
+      b: randomRgb(),
+    });
   }
 
   static tint(color: IRgbColor | string, percentage: number) {

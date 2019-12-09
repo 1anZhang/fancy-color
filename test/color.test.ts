@@ -109,3 +109,19 @@ test('test special conditions', () => {
   expect(fancyColor({ h: 360, s: 0, l: 33 }).toHexString()).toBe('#545454');
   expect(fancyColor('rgb(66, 66, 66)').toHslString()).toBe('hsl(0, 0%, 25.9%)');
 });
+
+test('test color equal', () => {
+  expect(fancyColor.equal('rgb(0, 0, 0)', '#000000'));
+  expect(fancyColor.equal({ h: 360, s: 0, l: 33 }, '#545454'));
+  expect(fancyColor.equal('hsla(324, 100%, 83.3%, 1)', '#fad'));
+});
+
+test('test generate random color', () => {
+  const hex6Reg: RegExp = /^#[a-fA-F0-9]{6}$/;
+  expect(
+    fancyColor
+      .random()
+      .toHexString()
+      .match(hex6Reg)
+  ).toBeTruthy();
+});
