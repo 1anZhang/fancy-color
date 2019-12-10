@@ -97,6 +97,8 @@ class Color {
     return this;
   }
 
+  // convert color to string
+
   toHexString(allow3Char = false): string {
     let r = decNumberToHexString(this._r);
     let g = decNumberToHexString(this._g);
@@ -139,6 +141,8 @@ class Color {
     return `hsla(${hsl.h}, ${hsl.s}%, ${hsl.l}%, ${this._a})`;
   }
 
+  // change color
+
   setAlpha(value: number) {
     if (value < 0) value = 0;
     if (value > 1) value = 1;
@@ -146,7 +150,125 @@ class Color {
     return this;
   }
 
-  getRgbObject(): IRgbColor {
+  tint(percentage: number) {
+    return Color.tint(this.rgb, percentage);
+  }
+
+  shade(percentage: number) {
+    return Color.shade(this.rgb, percentage);
+  }
+
+  mix(targetColor: IRgbColor | string, percentage: number) {
+    return Color.mix(this.rgb, targetColor, percentage);
+  }
+
+  saturate(amount = 10): Color {
+    let hsl = this.hsl;
+    hsl.s += amount;
+    hsl.s = hsl.s > 100 ? 100 : hsl.s;
+    return new Color(hsl);
+  }
+
+  desaturate(amount = 10): Color {
+    let hsl = this.hsl;
+    hsl.s -= amount;
+    hsl.s = hsl.s < 0 ? 0 : hsl.s;
+    return new Color(hsl);
+  }
+
+  lighten(amount = 10) {
+    let hsl = this.hsl;
+    hsl.l += amount;
+    hsl.l = hsl.l > 100 ? 100 : hsl.l;
+    return new Color(hsl);
+  }
+
+  darken(amount = 10) {
+    let hsl = this.hsl;
+    hsl.l -= amount;
+    hsl.l = hsl.l < 0 ? 0 : hsl.l;
+    return new Color(hsl);
+  }
+
+  spin(amount = 36) {
+    const hsl = this.hsl;
+    const hue = (hsl.h + amount + 360) % 360;
+    hsl.h = hue;
+    return new Color(hsl);
+  }
+
+  greyscale(): Color {
+    return this.desaturate(100);
+  }
+
+  // Combination Functions
+  // <https://github.com/infusion/jQuery-xcolor/blob/master/jquery.xcolor.js>
+
+  complement() {
+    return this.spin(180);
+  }
+
+  triad() {
+    const hsl = this.hsl;
+    const h = hsl.h;
+    return [
+      new Color(hsl),
+      new Color({ h: (h + 120) % 360, s: hsl.s, l: hsl.l }),
+      new Color({ h: (h + 240) % 360, s: hsl.s, l: hsl.l }),
+    ];
+  }
+
+  tetrad() {
+    const hsl = this.hsl;
+    const h = hsl.h;
+    return [
+      new Color(hsl),
+      new Color({ h: (h + 90) % 360, s: hsl.s, l: hsl.l }),
+      new Color({ h: (h + 180) % 360, s: hsl.s, l: hsl.l }),
+      new Color({ h: (h + 270) % 360, s: hsl.s, l: hsl.l }),
+    ];
+  }
+
+  splitcomplement() {
+    const hsl = this.hsl;
+    const h = hsl.h;
+    return [
+      new Color(hsl),
+      new Color({ h: (h + 72) % 360, s: hsl.s, l: hsl.l }),
+      new Color({ h: (h + 216) % 360, s: hsl.s, l: hsl.l }),
+    ];
+  }
+
+  analogous(results = 6, slices = 30) {
+    const hsl = this.hsl;
+    const part = 360 / slices;
+    const ret = [new Color(hsl)];
+
+    for (hsl.h = (hsl.h - ((part * results) >> 1) + 720) % 360; --results; ) {
+      hsl.h = (hsl.h + part) % 360;
+      ret.push(new Color(hsl));
+    }
+    return ret;
+  }
+
+  // monochromatic(results = 6) {
+  //   results = results || 6;
+  //   const hsv = this.hsv;
+  //   let h = hsv.h, s = hsv.s, v = hsv.v;
+  //   const ret = [];
+  //   const modification = 1 / results;
+
+  //   while (results--) {
+  //       ret.push(new Color({ h: h, s: s, v: v}));
+  //       v = (v + modification) % 1;
+  //   }
+
+  //   return ret;
+  // }
+
+  // get color data
+
+  get rgb(): IRgbColor {
     return {
       r: this._r,
       g: this._g,
@@ -154,7 +276,7 @@ class Color {
     };
   }
 
-  getRgbaObject(): IRgbaColor {
+  get rgba(): IRgbaColor {
     return {
       r: this._r,
       g: this._g,
@@ -163,7 +285,17 @@ class Color {
     };
   }
 
-  getAlpha(): number {
+  get hsl(): IHslColor {
+    const hsl = rgbToHsl(this.rgb);
+    return hsl;
+  }
+
+  get hsla(): IHslaColor {
+    const hsl = rgbToHsl(this.rgb);
+    return { ...hsl, a: this._a };
+  }
+
+  get alpha(): number {
     return this._a;
   }
 
@@ -197,26 +329,6 @@ class Color {
     return rounded(0.2126 * r + 0.7152 * g + 0.0722 * b, l);
   }
 
-  isDark(): boolean {
-    return this.getBrightness() < 128;
-  }
-
-  isLight(): boolean {
-    return !this.isDark();
-  }
-
-  tint(percentage: number) {
-    return Color.tint(this.getRgbObject(), percentage);
-  }
-
-  shade(percentage: number) {
-    return Color.shade(this.getRgbObject(), percentage);
-  }
-
-  mix(targetColor: IRgbColor | string, percentage: number) {
-    return Color.mix(this.getRgbObject(), targetColor, percentage);
-  }
-
   getHoverColor(): string {
     return this.tint(80).toHexString();
   }
@@ -225,23 +337,33 @@ class Color {
     return this.shade(5).toHexString();
   }
 
-  getColorGradeList(): Array<string> {
+  getColorGradeList(): Array<Color> {
     return [
-      this.tint(20).toHexString(),
-      this.tint(40).toHexString(),
-      this.tint(60).toHexString(),
-      this.tint(80).toHexString(),
-      this.toHexString(),
-      this.shade(20).toHexString(),
-      this.shade(40).toHexString(),
-      this.shade(60).toHexString(),
-      this.shade(80).toHexString(),
+      this.tint(20),
+      this.tint(40),
+      this.tint(60),
+      this.tint(80),
+      this,
+      this.shade(20),
+      this.shade(40),
+      this.shade(60),
+      this.shade(80),
     ];
   }
 
+  isDark(): boolean {
+    return this.getBrightness() < 128;
+  }
+
+  isLight(): boolean {
+    return !this.isDark();
+  }
+
+  // static method
+
   static readability(color1: IColor | string, color2: IColor | string) {
-    var c1 = new Color(color1);
-    var c2 = new Color(color2);
+    const c1 = new Color(color1);
+    const c2 = new Color(color2);
     return rounded(
       (Math.max(c1.getLuminance(), c2.getLuminance()) + 0.05) / (Math.min(c1.getLuminance(), c2.getLuminance()) + 0.05),
       2
@@ -263,33 +385,33 @@ class Color {
   static tint(color: IRgbColor | string, percentage: number) {
     let c: IRgbColor;
     if (typeof color === 'string') {
-      c = new Color(color).getRgbObject();
+      c = new Color(color).rgb;
     } else {
       c = color;
     }
-    return Color.mix(new Color('#fff').getRgbObject(), c, percentage);
+    return Color.mix(new Color('#fff').rgb, c, percentage);
   }
 
   static shade(color: IRgbColor | string, percentage: number) {
     let c: IRgbColor;
     if (typeof color === 'string') {
-      c = new Color(color).getRgbObject();
+      c = new Color(color).rgb;
     } else {
       c = color;
     }
-    return Color.mix(c, new Color('#000').getRgbObject(), percentage);
+    return Color.mix(c, new Color('#000').rgb, percentage);
   }
 
   static mix(originColor: IRgbColor | string, targetColor: IRgbColor | string, percentage: number) {
     let oc: IRgbColor;
     let tc: IRgbColor;
     if (typeof originColor === 'string') {
-      oc = new Color(originColor).getRgbObject();
+      oc = new Color(originColor).rgb;
     } else {
       oc = originColor;
     }
     if (typeof targetColor === 'string') {
-      tc = new Color(targetColor).getRgbObject();
+      tc = new Color(targetColor).rgb;
     } else {
       tc = targetColor;
     }

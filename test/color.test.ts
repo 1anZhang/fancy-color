@@ -13,8 +13,8 @@ test('color #fad can convert to any type', () => {
   expect(fancyColor('#fad').toRgbaString()).toBe('rgba(255, 170, 221, 1)');
   expect(fancyColor('#fad').toHslString()).toBe('hsl(324, 100%, 83.3%)');
   expect(fancyColor('#fad').toHslaString()).toBe('hsla(324, 100%, 83.3%, 1)');
-  expect(fancyColor('#fad').getRgbObject()).toEqual({ r: 255, g: 170, b: 221 });
-  expect(fancyColor('#fad').getRgbaObject()).toEqual({ r: 255, g: 170, b: 221, a: 1 });
+  expect(fancyColor('#fad').rgb).toEqual({ r: 255, g: 170, b: 221 });
+  expect(fancyColor('#fad').rgba).toEqual({ r: 255, g: 170, b: 221, a: 1 });
 });
 
 test('test tinyColor input', () => {
@@ -43,8 +43,8 @@ test('test transparent color', () => {
   expect(fancyColor('rgba(255, 170, 221, 0.8)').toRgbaString()).toBe('rgba(255, 170, 221, 0.8)');
   expect(fancyColor('rgba(255, 170, 221, 0.8)').toHslString()).toBe('hsl(324, 100%, 83.3%)');
   expect(fancyColor('rgba(255, 170, 221, 0.8)').toHslaString()).toBe('hsla(324, 100%, 83.3%, 0.8)');
-  expect(fancyColor('rgba(255, 170, 221, 0.8)').getRgbObject()).toEqual({ r: 255, g: 170, b: 221 });
-  expect(fancyColor('rgba(255, 170, 221, 0.8)').getRgbaObject()).toEqual({ r: 255, g: 170, b: 221, a: 0.8 });
+  expect(fancyColor('rgba(255, 170, 221, 0.8)').rgb).toEqual({ r: 255, g: 170, b: 221 });
+  expect(fancyColor('rgba(255, 170, 221, 0.8)').rgba).toEqual({ r: 255, g: 170, b: 221, a: 0.8 });
 });
 
 test('test color mix', () => {
@@ -73,7 +73,11 @@ test('test mix color template', () => {
 
   expect(fancyColor('#fad').getActiveColor()).toBe('#f2a1d1');
   expect(fancyColor('#fad').getHoverColor()).toBe('#ffbbe3');
-  expect(fancyColor('#fad').getColorGradeList()).toEqual(gradeList);
+  expect(
+    fancyColor('#fad')
+      .getColorGradeList()
+      .map(i => i.toHexString())
+  ).toEqual(gradeList);
 });
 
 test('test input color error', () => {
@@ -141,7 +145,7 @@ test('test color readability', () => {
 
 test('test color alpha method', () => {
   const c = fancyColor('#fff');
-  expect(c.setAlpha(0.2).getAlpha()).toBe(0.2);
-  expect(c.setAlpha(-3).getAlpha()).toBe(0);
-  expect(c.setAlpha(322).getAlpha()).toBe(1);
+  expect(c.setAlpha(0.2).alpha).toBe(0.2);
+  expect(c.setAlpha(-3).alpha).toBe(0);
+  expect(c.setAlpha(322).alpha).toBe(1);
 });
