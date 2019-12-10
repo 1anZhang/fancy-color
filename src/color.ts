@@ -3,8 +3,11 @@ import {
   decNumberToHexString,
   hslToRgb,
   rgbToHsl,
+  rgbToHsv,
+  hsvToRgb,
   checkRgbColor,
   checkHslColor,
+  checkHsvColor,
   isNotNull,
   randomRgb,
   rounded,
@@ -18,6 +21,7 @@ export interface IColor {
   h?: number;
   s?: number;
   l?: number;
+  v?: number;
 }
 export interface IRgbColor {
   r: number;
@@ -37,6 +41,12 @@ export interface IHslColor {
 
 export interface IHslaColor extends IHslColor {
   a: number;
+}
+
+export interface IHsvColor {
+  h: number;
+  s: number;
+  v: number;
 }
 
 class Color {
@@ -87,6 +97,23 @@ class Color {
           this._b = rgb.b;
         } else {
           throw new Error(`hsl color input error: ${JSON.stringify(color)}, please check the input`);
+        }
+      }
+
+      if (isNotNull(color.h) && isNotNull(color.s) && isNotNull(color.v)) {
+        const hsv: IHsvColor = {
+          h: color.h || 0,
+          s: color.s || 0,
+          v: color.v || 0,
+        };
+        const isRightColor = checkHsvColor(hsv);
+        if (isRightColor) {
+          const rgb = hsvToRgb(hsv);
+          this._r = rgb.r;
+          this._g = rgb.g;
+          this._b = rgb.b;
+        } else {
+          throw new Error(`hsv color input error: ${JSON.stringify(color)}, please check the input`);
         }
       }
 
@@ -251,20 +278,21 @@ class Color {
     return ret;
   }
 
-  // monochromatic(results = 6) {
-  //   results = results || 6;
-  //   const hsv = this.hsv;
-  //   let h = hsv.h, s = hsv.s, v = hsv.v;
-  //   const ret = [];
-  //   const modification = 1 / results;
+  monochromatic(results = 6) {
+    const hsv = this.hsv;
+    let h = hsv.h,
+      s = hsv.s,
+      v = hsv.v;
+    const ret = [];
+    const modification = 1 / results;
 
-  //   while (results--) {
-  //       ret.push(new Color({ h: h, s: s, v: v}));
-  //       v = (v + modification) % 1;
-  //   }
+    while (results--) {
+      ret.push(new Color({ h: h, s: s, v: v }));
+      v = (v + modification) % 1;
+    }
 
-  //   return ret;
-  // }
+    return ret;
+  }
 
   // get color data
 
@@ -293,6 +321,11 @@ class Color {
   get hsla(): IHslaColor {
     const hsl = rgbToHsl(this.rgb);
     return { ...hsl, a: this._a };
+  }
+
+  get hsv(): IHsvColor {
+    const hsv = rgbToHsv(this.rgb);
+    return hsv;
   }
 
   get alpha(): number {
