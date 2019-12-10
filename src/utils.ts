@@ -231,6 +231,10 @@ function randomRgb(): number {
   return Math.round(Math.random() * 255);
 }
 
+function rounded(num: number, len: number): number {
+  return Number(num.toFixed(len));
+}
+
 export {
   decodeColorString,
   hexStringToDecNumber,
@@ -241,4 +245,5 @@ export {
   checkHslColor,
   isNotNull,
   randomRgb,
+  rounded,
 };

@@ -125,3 +125,23 @@ test('test generate random color', () => {
       .match(hex6Reg)
   ).toBeTruthy();
 });
+
+test('test color is drak or light', () => {
+  expect(fancyColor('#000').isDark()).toBeTruthy();
+  expect(fancyColor('#000').isLight()).toBeFalsy();
+  expect(fancyColor('#fad').isDark()).toBeFalsy();
+  expect(fancyColor('#fad').isLight()).toBeTruthy();
+});
+
+test('test color readability', () => {
+  expect(fancyColor.readability('#000', '#fff')).toBe(21);
+  expect(fancyColor.readability('#000', '#fad')).toBe(12.05);
+  expect(fancyColor.readability('#fad', '#fff')).toBe(1.74);
+});
+
+test('test color alpha method', () => {
+  const c = fancyColor('#fff');
+  expect(c.setAlpha(0.2).getAlpha()).toBe(0.2);
+  expect(c.setAlpha(-3).getAlpha()).toBe(0);
+  expect(c.setAlpha(322).getAlpha()).toBe(1);
+});

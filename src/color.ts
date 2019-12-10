@@ -7,6 +7,7 @@ import {
   checkHslColor,
   isNotNull,
   randomRgb,
+  rounded,
 } from './utils';
 
 export interface IColor {
@@ -138,6 +139,13 @@ class Color {
     return `hsla(${hsl.h}, ${hsl.s}%, ${hsl.l}%, ${this._a})`;
   }
 
+  setAlpha(value: number) {
+    if (value < 0) value = 0;
+    if (value > 1) value = 1;
+    this._a = value;
+    return this;
+  }
+
   getRgbObject(): IRgbColor {
     return {
       r: this._r,
@@ -153,6 +161,48 @@ class Color {
       b: this._b,
       a: this._a,
     };
+  }
+
+  getAlpha(): number {
+    return this._a;
+  }
+
+  getBrightness(l = 0): number {
+    return rounded((this._r * 299 + this._g * 587 + this._b * 114) / 1000, l);
+  }
+
+  getLuminance(l = 6): number {
+    let RsRGB: number = this._r / 255;
+    let GsRGB: number = this._g / 255;
+    let BsRGB: number = this._b / 255;
+    let r: number;
+    let g: number;
+    let b: number;
+
+    if (RsRGB <= 0.03928) {
+      r = RsRGB / 12.92;
+    } else {
+      r = Math.pow((RsRGB + 0.055) / 1.055, 2.4);
+    }
+    if (GsRGB <= 0.03928) {
+      g = GsRGB / 12.92;
+    } else {
+      g = Math.pow((GsRGB + 0.055) / 1.055, 2.4);
+    }
+    if (BsRGB <= 0.03928) {
+      b = BsRGB / 12.92;
+    } else {
+      b = Math.pow((BsRGB + 0.055) / 1.055, 2.4);
+    }
+    return rounded(0.2126 * r + 0.7152 * g + 0.0722 * b, l);
+  }
+
+  isDark(): boolean {
+    return this.getBrightness() < 128;
+  }
+
+  isLight(): boolean {
+    return !this.isDark();
   }
 
   tint(percentage: number) {
@@ -187,6 +237,15 @@ class Color {
       this.shade(60).toHexString(),
       this.shade(80).toHexString(),
     ];
+  }
+
+  static readability(color1: IColor | string, color2: IColor | string) {
+    var c1 = new Color(color1);
+    var c2 = new Color(color2);
+    return rounded(
+      (Math.max(c1.getLuminance(), c2.getLuminance()) + 0.05) / (Math.min(c1.getLuminance(), c2.getLuminance()) + 0.05),
+      2
+    );
   }
 
   static equal(color1: IColor | string, color2: IColor | string) {
