@@ -1,7 +1,6 @@
 import Color, { IColor } from './color';
 
 function fancyColor(color: Color | IColor | string) {
-  // fancyColor.prototype = Color;
   return new Color(color);
 }
 

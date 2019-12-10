@@ -241,7 +241,7 @@ function rgbToHsv(color: IRgbColor): IHsvColor {
   const d = max - min;
   s = max === 0 ? 0 : d / max;
 
-  if (max == min) {
+  if (max === min) {
     h = 0; // achromatic
   } else {
     switch (max) {
