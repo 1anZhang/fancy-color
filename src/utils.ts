@@ -192,7 +192,7 @@ function hue2rgb(p: number, q: number, t: number): number {
   return p;
 }
 
-function rgbToHsl(color: IRgbColor, precision = 0): IHslColor {
+function rgbToHsl(color: IRgbColor, precision = 2): IHslColor {
   const r: number = color.r / 255;
   const g: number = color.g / 255;
   const b: number = color.b / 255;
@@ -227,7 +227,7 @@ function rgbToHsl(color: IRgbColor, precision = 0): IHslColor {
   return { h, s, l };
 }
 
-function rgbToHsv(color: IRgbColor): IHsvColor {
+function rgbToHsv(color: IRgbColor, precision = 2): IHsvColor {
   const r: number = color.r / 255;
   const g: number = color.g / 255;
   const b: number = color.b / 255;
@@ -257,7 +257,11 @@ function rgbToHsv(color: IRgbColor): IHsvColor {
     }
     h /= 6;
   }
-  return { h: h, s: s, v: v };
+  h = Math.round(h * 360);
+  s = Number((s * 100).toFixed(precision));
+  v = Number((v * 100).toFixed(precision));
+
+  return { h, s, v };
 }
 
 // `hsvToRgb`
@@ -279,7 +283,7 @@ function hsvToRgb(color: IHsvColor): IRgbColor {
     g = [t, v, v, q, p, p][mod],
     b = [p, p, t, v, v, q][mod];
 
-  return { r: r * 255, g: g * 255, b: b * 255 };
+  return { r: Number((r * 255).toFixed(0)), g: Number((g * 255).toFixed(0)), b: Number((b * 255).toFixed(0)) };
 }
 
 function isNotNull(p: any): boolean {

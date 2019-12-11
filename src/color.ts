@@ -284,11 +284,11 @@ class Color {
       s = hsv.s,
       v = hsv.v;
     const ret = [];
-    const modification = 1 / results;
+    const modification = (1 / results) * 100;
 
     while (results--) {
       ret.push(new Color({ h: h, s: s, v: v }));
-      v = (v + modification) % 1;
+      v = (v + modification) % 100;
     }
 
     return ret;
