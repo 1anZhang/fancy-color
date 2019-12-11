@@ -15,6 +15,9 @@ test('color #fad can convert to any type', () => {
   expect(fancyColor('#fad').toHslaString()).toBe('hsla(324, 100%, 83.3%, 1)');
   expect(fancyColor('#fad').rgb).toEqual({ r: 255, g: 170, b: 221 });
   expect(fancyColor('#fad').rgba).toEqual({ r: 255, g: 170, b: 221, a: 1 });
+  expect(fancyColor('#fad').hsl).toEqual({ h: 324, s: 100, l: 83.33 });
+  expect(fancyColor('#fad').hsla).toEqual({ h: 324, s: 100, l: 83.33, a: 1 });
+  expect(fancyColor('#fad').hsv).toEqual({ h: 324, s: 33.33, v: 100 });
 });
 
 test('test tinyColor input', () => {
@@ -28,6 +31,7 @@ test('test tinyColor input', () => {
   expect(fancyColor({ r: 255, g: 170, b: 221, a: 1 }).toHexString()).toBe('#ffaadd');
   expect(fancyColor({ h: 324, s: 100, l: 83.3 }).toHexString()).toBe('#ffaadd');
   expect(fancyColor({ h: 324, s: 100, l: 83.3, a: 1 }).toHexString()).toBe('#ffaadd');
+  expect(fancyColor({ h: 324, s: 33, v: 83 }).toHexString()).toBe('#d48eb8');
 });
 
 test('test hsl color precision', () => {
@@ -68,16 +72,15 @@ test('test color mix', () => {
   expect(fancyColor.tint('#fad', 40).toHexString()).toBe('#ffddf1');
 });
 
-test('test mix color template', () => {
+test('test get color method', () => {
   const gradeList = ['#ffeef8', '#ffddf1', '#ffccea', '#ffbbe3', '#ffaadd', '#cc88b0', '#996684', '#664458', '#33222c'];
+  const c = fancyColor('#fad');
 
-  expect(fancyColor('#fad').getActiveColor()).toBe('#f2a1d1');
-  expect(fancyColor('#fad').getHoverColor()).toBe('#ffbbe3');
-  expect(
-    fancyColor('#fad')
-      .getColorGradeList()
-      .map(i => i.toHexString())
-  ).toEqual(gradeList);
+  expect(c.getActiveColor()).toBe('#f2a1d1');
+  expect(c.getHoverColor()).toBe('#ffbbe3');
+  expect(c.getBrightness()).toBe(201);
+  expect(c.getLuminance(2)).toBe(0.55);
+  expect(c.getColorGradeList().map(i => i.toHexString())).toEqual(gradeList);
 });
 
 test('test input color error', () => {
@@ -148,4 +151,52 @@ test('test color alpha method', () => {
   expect(c.setAlpha(0.2).alpha).toBe(0.2);
   expect(c.setAlpha(-3).alpha).toBe(0);
   expect(c.setAlpha(322).alpha).toBe(1);
+});
+
+test('test color operator method', () => {
+  const c = fancyColor('#fad');
+  expect(c.saturate().toHexString()).toBe('#ffaadd');
+  expect(c.saturate(33).toHexString()).toBe('#ffaadd');
+  expect(c.desaturate().toHexString()).toBe('#fbaedc');
+  expect(c.desaturate(42).toHexString()).toBe('#edbcd9');
+  expect(c.lighten().toHexString()).toBe('#ffddf1');
+  expect(c.lighten(23).toHexString()).toBe('#ffffff');
+  expect(c.darken().toHexString()).toBe('#ff77c9');
+  expect(c.darken(12).toHexString()).toBe('#ff6dc5');
+  expect(c.spin().toHexString()).toBe('#ffaaaa');
+  expect(c.spin(90).toHexString()).toBe('#fff6aa');
+  expect(c.greyscale().toHexString()).toBe('#d4d4d4');
+  expect(c.complement().toHexString()).toBe('#aaffcc');
+});
+
+test('test color combination', () => {
+  const c = fancyColor('#fad');
+  const d = fancyColor('#f00');
+  expect(c.triad().map(i => i.toHexString())).toEqual(['#ffaadd', '#ddffaa', '#aaddff']);
+  expect(c.tetrad().map(i => i.toHexString())).toEqual(['#ffaadd', '#fff6aa', '#aaffcc', '#aab2ff']);
+  expect(c.splitcomplement().map(i => i.toHexString())).toEqual(['#ffaadd', '#ffddaa', '#aaffff']);
+  expect(c.analogous().map(i => i.toHexString())).toEqual([
+    '#ffaadd',
+    '#ffaaff',
+    '#ffaaee',
+    '#ffaadd',
+    '#ffaacc',
+    '#ffaabb',
+  ]);
+  expect(c.monochromatic().map(i => i.toHexString())).toEqual([
+    '#ffaadd',
+    '#2a1c25',
+    '#55394a',
+    '#7f556f',
+    '#aa7193',
+    '#d48eb8',
+  ]);
+  expect(d.monochromatic().map(i => i.toHexString())).toEqual([
+    '#ff0000',
+    '#2a0000',
+    '#550000',
+    '#7f0000',
+    '#aa0000',
+    '#d40000',
+  ]);
 });
