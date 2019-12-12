@@ -31,7 +31,7 @@ test('test tinyColor input', () => {
   expect(fancyColor({ r: 255, g: 170, b: 221, a: 1 }).toHexString()).toBe('#ffaadd');
   expect(fancyColor({ h: 324, s: 100, l: 83.3 }).toHexString()).toBe('#ffaadd');
   expect(fancyColor({ h: 324, s: 100, l: 83.3, a: 1 }).toHexString()).toBe('#ffaadd');
-  expect(fancyColor({ h: 324, s: 33, v: 83 }).toHexString()).toBe('#d48eb8');
+  expect(fancyColor({ h: 324, s: 33.33, v: 100 }).toHexString()).toBe('#ffaadd');
 });
 
 test('test hsl color precision', () => {
@@ -114,6 +114,9 @@ test('test special conditions', () => {
   expect(fancyColor('hsl(0, 0%, 0%)').toHexString()).toBe('#000000');
   expect(fancyColor({ r: 0, g: 0, b: 0 }).toHexString()).toBe('#000000');
   expect(fancyColor({ h: 360, s: 0, l: 33 }).toHexString()).toBe('#545454');
+  expect(fancyColor({ h: 0, s: 12, l: 33 }).toHexString()).toBe('#5e4a4a');
+  expect(fancyColor({ h: 360, s: 0, v: 13 }).toHexString()).toBe('#212121');
+  expect(fancyColor({ h: 360, s: 100, v: 0 }).toHexString()).toBe('#000000');
   expect(fancyColor('rgb(66, 66, 66)').toHslString()).toBe('hsl(0, 0%, 25.9%)');
 });
 
