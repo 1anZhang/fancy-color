@@ -11,4 +11,4 @@ fancyColor.equal = Color.equal;
 fancyColor.random = Color.random;
 fancyColor.readability = Color.readability;
 
-export default fancyColor;
+export {fancyColor};
