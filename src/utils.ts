@@ -1,4 +1,4 @@
-import { IRgbColor, IHslColor, IRgbaColor, IHslaColor } from './color';
+import { IRgbColor, IHslColor, IRgbaColor, IHslaColor, IHsvColor } from './color';
 
 const rgbReg: RegExp = /^rgb\(\s*(\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\s*\)$/;
 const rgbaReg: RegExp = /^rgba\(\s*(\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\s*,\s*(0?\.?\d+)\s*\)$/;
@@ -110,6 +110,10 @@ function checkHslColor(color: IHslColor): boolean {
   return isRighthHueRange(color.h) && isRightPercentRange(color.s) && isRightPercentRange(color.l);
 }
 
+function checkHsvColor(color: IHsvColor): boolean {
+  return isRighthHueRange(color.h) && isRightPercentRange(color.s) && isRightPercentRange(color.v);
+}
+
 function checkHslaColor(color: IHslaColor): boolean {
   return (
     isRighthHueRange(color.h) &&
@@ -188,7 +192,7 @@ function hue2rgb(p: number, q: number, t: number): number {
   return p;
 }
 
-function rgbToHsl(color: IRgbColor, precision = 0): IHslColor {
+function rgbToHsl(color: IRgbColor, precision = 2): IHslColor {
   const r: number = color.r / 255;
   const g: number = color.g / 255;
   const b: number = color.b / 255;
@@ -223,8 +227,75 @@ function rgbToHsl(color: IRgbColor, precision = 0): IHslColor {
   return { h, s, l };
 }
 
+function rgbToHsv(color: IRgbColor, precision = 2): IHsvColor {
+  const r: number = color.r / 255;
+  const g: number = color.g / 255;
+  const b: number = color.b / 255;
+
+  const max = Math.max(r, g, b),
+    min = Math.min(r, g, b);
+  let h = 0,
+    s = 0,
+    v = max;
+
+  const d = max - min;
+  s = max === 0 ? 0 : d / max;
+
+  if (max === min) {
+    h = 0; // achromatic
+  } else {
+    switch (max) {
+      case r:
+        h = (g - b) / d + (g < b ? 6 : 0);
+        break;
+      case g:
+        h = (b - r) / d + 2;
+        break;
+      case b:
+        h = (r - g) / d + 4;
+        break;
+    }
+    h /= 6;
+  }
+  h = Math.round(h * 360);
+  s = Number((s * 100).toFixed(precision));
+  v = Number((v * 100).toFixed(precision));
+
+  return { h, s, v };
+}
+
+// `hsvToRgb`
+// Converts an HSV color value to RGB.
+// *Assumes:* h is contained in [0, 1] or [0, 360] and s and v are contained in [0, 1] or [0, 100]
+// *Returns:* { r, g, b } in the set [0, 255]
+function hsvToRgb(color: IHsvColor): IRgbColor {
+  const h = (color.h / 360) * 6;
+  const s = color.s / 100;
+  const v = color.v / 100;
+
+  let i = Math.floor(h),
+    f = h - i,
+    p = v * (1 - s),
+    q = v * (1 - f * s),
+    t = v * (1 - (1 - f) * s),
+    mod = i % 6,
+    r = [v, q, p, p, t, v][mod],
+    g = [t, v, v, q, p, p][mod],
+    b = [p, p, t, v, v, q][mod];
+
+  return { r: Number((r * 255).toFixed(0)), g: Number((g * 255).toFixed(0)), b: Number((b * 255).toFixed(0)) };
+}
+
 function isNotNull(p: any): boolean {
   return p != null;
+}
+
+function randomRgb(): number {
+  return Math.round(Math.random() * 255);
+}
+
+function rounded(num: number, len: number): number {
+  return Number(num.toFixed(len));
 }
 
 export {
@@ -233,7 +304,12 @@ export {
   decNumberToHexString,
   hslToRgb,
   rgbToHsl,
+  rgbToHsv,
+  hsvToRgb,
   checkRgbColor,
   checkHslColor,
+  checkHsvColor,
   isNotNull,
+  randomRgb,
+  rounded,
 };
