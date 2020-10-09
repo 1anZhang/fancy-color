@@ -6,7 +6,7 @@
   "description": "fancy color lib for art",
   "repository": "git@github.com:ZhangYxY/fancy-color.git",
   "main": "dist/index.js",
-  "module": "dist/tsdx-demo.esm.js",
+  "module": "dist/fancy-color.esm.js",
   "typings": "dist/index.d.ts",
   "files": [
     "dist"
