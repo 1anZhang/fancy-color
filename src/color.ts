@@ -170,22 +170,22 @@ class Color {
 
   // change color
 
-  setAlpha(value: number) {
+  setAlpha(value: number): Color {
     if (value < 0) value = 0;
     if (value > 1) value = 1;
     this._a = value;
     return this;
   }
 
-  tint(percentage: number) {
+  tint(percentage: number): Color {
     return Color.tint(this.rgb, percentage);
   }
 
-  shade(percentage: number) {
+  shade(percentage: number): Color {
     return Color.shade(this.rgb, percentage);
   }
 
-  mix(targetColor: IRgbColor | string, percentage: number) {
+  mix(targetColor: IRgbColor | string, percentage: number): Color {
     return Color.mix(this.rgb, targetColor, percentage);
   }
 
@@ -203,21 +203,21 @@ class Color {
     return new Color(hsl);
   }
 
-  lighten(amount = 10) {
+  lighten(amount = 10): Color {
     let hsl = this.hsl;
     hsl.l += amount;
     hsl.l = hsl.l > 100 ? 100 : hsl.l;
     return new Color(hsl);
   }
 
-  darken(amount = 10) {
+  darken(amount = 10): Color {
     let hsl = this.hsl;
     hsl.l -= amount;
     hsl.l = hsl.l < 0 ? 0 : hsl.l;
     return new Color(hsl);
   }
 
-  spin(amount = 36) {
+  spin(amount = 36): Color {
     const hsl = this.hsl;
     const hue = (hsl.h + amount + 360) % 360;
     hsl.h = hue;
@@ -231,11 +231,11 @@ class Color {
   // Combination Functions
   // <https://github.com/infusion/jQuery-xcolor/blob/master/jquery.xcolor.js>
 
-  complement() {
+  complement(): Color {
     return this.spin(180);
   }
 
-  triad() {
+  triad(): Color[] {
     const hsl = this.hsl;
     const h = hsl.h;
     return [
@@ -245,7 +245,7 @@ class Color {
     ];
   }
 
-  tetrad() {
+  tetrad(): Color[] {
     const hsl = this.hsl;
     const h = hsl.h;
     return [
@@ -256,7 +256,7 @@ class Color {
     ];
   }
 
-  splitcomplement() {
+  splitcomplement(): Color[] {
     const hsl = this.hsl;
     const h = hsl.h;
     return [
@@ -266,7 +266,7 @@ class Color {
     ];
   }
 
-  analogous(results = 6, slices = 30) {
+  analogous(results = 6, slices = 30): Color[] {
     const hsl = this.hsl;
     const part = 360 / slices;
     const ret = [new Color(hsl)];
@@ -278,7 +278,7 @@ class Color {
     return ret;
   }
 
-  monochromatic(results = 6) {
+  monochromatic(results = 6): Color[] {
     const hsv = this.hsv;
     let h = hsv.h,
       s = hsv.s,
@@ -370,7 +370,7 @@ class Color {
     return this.shade(5).toHexString();
   }
 
-  getColorGradeList(): Array<Color> {
+  getColorGradeList(): Color[] {
     return [
       this.tint(20),
       this.tint(40),
@@ -394,7 +394,7 @@ class Color {
 
   // static method
 
-  static readability(color1: IColor | string, color2: IColor | string) {
+  static readability(color1: IColor | string, color2: IColor | string): number {
     const c1 = new Color(color1);
     const c2 = new Color(color2);
     return rounded(
@@ -403,7 +403,7 @@ class Color {
     );
   }
 
-  static equal(color1: IColor | string, color2: IColor | string) {
+  static equal(color1: IColor | string, color2: IColor | string): boolean {
     return new Color(color1).toHexString() === new Color(color2).toHexString();
   }
 
@@ -415,7 +415,7 @@ class Color {
     });
   }
 
-  static tint(color: IRgbColor | string, percentage: number) {
+  static tint(color: IRgbColor | string, percentage: number): Color {
     let c: IRgbColor;
     if (typeof color === 'string') {
       c = new Color(color).rgb;
@@ -425,7 +425,7 @@ class Color {
     return Color.mix(new Color('#fff').rgb, c, percentage);
   }
 
-  static shade(color: IRgbColor | string, percentage: number) {
+  static shade(color: IRgbColor | string, percentage: number): Color {
     let c: IRgbColor;
     if (typeof color === 'string') {
       c = new Color(color).rgb;
@@ -435,7 +435,7 @@ class Color {
     return Color.mix(c, new Color('#000').rgb, percentage);
   }
 
-  static mix(originColor: IRgbColor | string, targetColor: IRgbColor | string, percentage: number) {
+  static mix(originColor: IRgbColor | string, targetColor: IRgbColor | string, percentage: number): Color {
     let oc: IRgbColor;
     let tc: IRgbColor;
     if (typeof originColor === 'string') {
