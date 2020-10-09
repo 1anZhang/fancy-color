@@ -1,12 +1,12 @@
 {
   "name": "fancy-color",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "license": "MIT",
   "author": "ZhangYxY <512224856@qq.com>",
   "description": "fancy color lib for art",
   "repository": "git@github.com:ZhangYxY/fancy-color.git",
   "main": "dist/index.js",
-  "module": "dist/tsdx-demo.esm.js",
+  "module": "dist/fancy-color.esm.js",
   "typings": "dist/index.d.ts",
   "files": [
     "dist"
