@@ -1,4 +1,5 @@
-import { fancyColor } from '../src';
+// import { fancyColor } from '../src';
+import fancyColor from '../src/index';
 
 test('fancyColor initialization', () => {
   expect(typeof fancyColor !== undefined).toBeTruthy();
