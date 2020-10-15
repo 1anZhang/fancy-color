@@ -4,6 +4,7 @@ import {
   hslToRgb,
   rgbToHsl,
   rgbToHsv,
+  rgbToCmyk,
   hsvToRgb,
   checkRgbColor,
   checkHslColor,
@@ -47,6 +48,13 @@ export interface IHsvColor {
   h: number;
   s: number;
   v: number;
+}
+
+export interface ICmykColor {
+  c: number;
+  m: number;
+  y: number;
+  k: number;
 }
 
 class Color {
@@ -124,7 +132,9 @@ class Color {
     return this;
   }
 
-  // convert color to string
+  /**
+   * 获取各种类型颜色的String值
+   */
 
   toHexString(allow3Char = false): string {
     let r = decNumberToHexString(this._r);
@@ -168,7 +178,9 @@ class Color {
     return `hsla(${hsl.h}, ${hsl.s}%, ${hsl.l}%, ${this._a})`;
   }
 
-  // change color
+  /**
+   * 改变当前对象的透明度
+   */
 
   setAlpha(value: number): Color {
     if (value < 0) value = 0;
@@ -176,6 +188,10 @@ class Color {
     this._a = value;
     return this;
   }
+
+  /**
+   * 颜色操作
+   */
 
   tint(percentage: number): Color {
     return Color.tint(this.rgb, percentage);
@@ -328,6 +344,11 @@ class Color {
     return hsv;
   }
 
+  get cmyk(): ICmykColor {
+    const cmyk = rgbToCmyk(this.rgb);
+    return cmyk;
+  }
+
   get alpha(): number {
     return this._a;
   }
@@ -392,7 +413,9 @@ class Color {
     return !this.isDark();
   }
 
-  // static method
+  /**
+   * 静态方法
+   */
 
   static readability(color1: IColor | string, color2: IColor | string): number {
     const c1 = new Color(color1);

@@ -19,6 +19,24 @@ test('color #fad can convert to any type', () => {
   expect(fancyColor('#fad').hsl).toEqual({ h: 324, s: 100, l: 83.33 });
   expect(fancyColor('#fad').hsla).toEqual({ h: 324, s: 100, l: 83.33, a: 1 });
   expect(fancyColor('#fad').hsv).toEqual({ h: 324, s: 33.33, v: 100 });
+  expect(fancyColor('#fad').hsv).toEqual({ h: 324, s: 33.33, v: 100 });
+  expect(fancyColor('#fad').cmyk).toEqual({ c: 0, m: 33, y: 13, k: 0 });
+});
+
+test('test cmyk color', () => {
+  expect(fancyColor('#000').cmyk).toEqual({ c: 0, m: 0, y: 0, k: 100 });
+  expect(fancyColor('#FFF').cmyk).toEqual({ c: 0, m: 0, y: 0, k: 0 });
+  expect(fancyColor('#F00').cmyk).toEqual({ c: 0, m: 100, y: 100, k: 0 });
+  expect(fancyColor('#0F0').cmyk).toEqual({ c: 100, m: 0, y: 100, k: 0 });
+  expect(fancyColor('#00F').cmyk).toEqual({ c: 100, m: 100, y: 0, k: 0 });
+  expect(fancyColor('#FF0').cmyk).toEqual({ c: 0, m: 0, y: 100, k: 0 });
+  expect(fancyColor('#0FF').cmyk).toEqual({ c: 100, m: 0, y: 0, k: 0 });
+  expect(fancyColor('#98f5ff').cmyk).toEqual({ c: 40, m: 4, y: 0, k: 0 });
+  expect(fancyColor('#d2691e').cmyk).toEqual({ c: 0, m: 50, y: 86, k: 18 });
+  expect(fancyColor('#7fff00').cmyk).toEqual({ c: 50, m: 0, y: 100, k: 0 });
+  expect(fancyColor('#ffd39b').cmyk).toEqual({ c: 0, m: 17, y: 39, k: 0 });
+  expect(fancyColor('#8a2be2').cmyk).toEqual({ c: 39, m: 81, y: 0, k: 11 });
+  expect(fancyColor('#838b8b').cmyk).toEqual({ c: 6, m: 0, y: 0, k: 45 });
 });
 
 test('test tinyColor input', () => {
@@ -106,6 +124,9 @@ test('test input color error', () => {
   expect(() => {
     fancyColor({ h: 324, s: 100, l: 123.3 });
   }).toThrow('hsl color input error: {"h":324,"s":100,"l":123.3}, please check the input');
+  expect(() => {
+    fancyColor({ h: 324, s: 100, v: 123.3 });
+  }).toThrow('hsv color input error: {"h":324,"s":100,"v":123.3}, please check the input');
 });
 
 test('test special conditions', () => {

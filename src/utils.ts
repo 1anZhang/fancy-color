@@ -1,4 +1,4 @@
-import { IRgbColor, IHslColor, IRgbaColor, IHslaColor, IHsvColor } from './color';
+import { IRgbColor, IHslColor, IRgbaColor, IHslaColor, IHsvColor, ICmykColor } from './color';
 
 const rgbReg: RegExp = /^rgb\(\s*(\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\s*\)$/;
 const rgbaReg: RegExp = /^rgba\(\s*(\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\s*,\s*(0?\.?\d+)\s*\)$/;
@@ -264,6 +264,26 @@ function rgbToHsv(color: IRgbColor, precision = 2): IHsvColor {
   return { h, s, v };
 }
 
+function rgbToCmyk(color: IRgbColor): ICmykColor {
+  const r: number = color.r / 255;
+  const g: number = color.g / 255;
+  const b: number = color.b / 255;
+  let c: number, m: number, y: number, k: number;
+  if (Math.max(r, g, b) === 0) {
+    return { c: 0, m: 0, y: 0, k: 100 };
+  }
+  k = 1 - Math.max(r, g, b);
+  c = (1 - r - k) / (1 - k);
+  m = (1 - g - k) / (1 - k);
+  y = (1 - b - k) / (1 - k);
+  c = Math.round(c * 100);
+  m = Math.round(m * 100);
+  y = Math.round(y * 100);
+  k = Math.round(k * 100);
+
+  return { c, m, y, k };
+}
+
 // `hsvToRgb`
 // Converts an HSV color value to RGB.
 // *Assumes:* h is contained in [0, 1] or [0, 360] and s and v are contained in [0, 1] or [0, 100]
@@ -305,6 +325,7 @@ export {
   hslToRgb,
   rgbToHsl,
   rgbToHsv,
+  rgbToCmyk,
   hsvToRgb,
   checkRgbColor,
   checkHslColor,
