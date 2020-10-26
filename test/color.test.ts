@@ -19,7 +19,7 @@ test('color #fad can convert to any type', () => {
   expect(fancyColor('#fad').hsl).toEqual({ h: 324, s: 100, l: 83.33 });
   expect(fancyColor('#fad').hsla).toEqual({ h: 324, s: 100, l: 83.33, a: 1 });
   expect(fancyColor('#fad').hsv).toEqual({ h: 324, s: 33.33, v: 100 });
-  expect(fancyColor('#fad').hsv).toEqual({ h: 324, s: 33.33, v: 100 });
+  expect(fancyColor('#fad').hsva).toEqual({ h: 324, s: 33.33, v: 100, a: 1 });
   expect(fancyColor('#fad').cmyk).toEqual({ c: 0, m: 33, y: 13, k: 0 });
 });
 
@@ -51,6 +51,7 @@ test('test tinyColor input', () => {
   expect(fancyColor({ h: 324, s: 100, l: 83.3 }).toHexString()).toBe('#ffaadd');
   expect(fancyColor({ h: 324, s: 100, l: 83.3, a: 1 }).toHexString()).toBe('#ffaadd');
   expect(fancyColor({ h: 324, s: 33.33, v: 100 }).toHexString()).toBe('#ffaadd');
+  expect(fancyColor({ h: 324, s: 33.33, v: 100, a: 1 }).toHexString()).toBe('#ffaadd');
 });
 
 test('test hsl color precision', () => {
@@ -80,23 +81,23 @@ test('test color mix', () => {
     fancyColor('#fad')
       .shade(40)
       .toHexString()
-  ).toBe('#996684');
+  ).toBe('#996685');
   expect(
     fancyColor('#fad')
-      .tint(40)
+      .tint(60)
       .toHexString()
   ).toBe('#ffddf1');
   expect(fancyColor.mix('#fad', '#ddd', 40).toHexString()).toBe('#f1bedd');
-  expect(fancyColor.shade('#fad', 40).toHexString()).toBe('#996684');
-  expect(fancyColor.tint('#fad', 40).toHexString()).toBe('#ffddf1');
+  expect(fancyColor.shade('#fad', 40).toHexString()).toBe('#996685');
+  expect(fancyColor.tint('#fad', 60).toHexString()).toBe('#ffddf1');
 });
 
 test('test get color method', () => {
-  const gradeList = ['#ffeef8', '#ffddf1', '#ffccea', '#ffbbe3', '#ffaadd', '#cc88b0', '#996684', '#664458', '#33222c'];
+  const gradeList = ['#ffeef8', '#ffddf1', '#ffcceb', '#ffbbe4', '#ffaadd', '#cc88b1', '#996685', '#664458', '#33222c'];
   const c = fancyColor('#fad');
 
-  expect(c.getActiveColor()).toBe('#f2a1d1');
-  expect(c.getHoverColor()).toBe('#ffbbe3');
+  expect(c.getActiveColor()).toBe('#f2a2d2');
+  expect(c.getHoverColor()).toBe('#ffbbe4');
   expect(c.getBrightness()).toBe(201);
   expect(c.getLuminance(2)).toBe(0.55);
   expect(c.getColorGradeList().map(i => i.toHexString())).toEqual(gradeList);
@@ -190,17 +191,17 @@ test('test color operator method', () => {
   expect(c.darken(12).toHexString()).toBe('#ff6dc5');
   expect(c.spin().toHexString()).toBe('#ffaaaa');
   expect(c.spin(90).toHexString()).toBe('#fff6aa');
-  expect(c.greyscale().toHexString()).toBe('#d4d4d4');
-  expect(c.complement().toHexString()).toBe('#aaffcc');
+  expect(c.getGreyscale().toHexString()).toBe('#d4d4d4');
+  expect(c.getComplementary().toHexString()).toBe('#aaffcc');
 });
 
 test('test color combination', () => {
   const c = fancyColor('#fad');
   const d = fancyColor('#f00');
-  expect(c.triad().map(i => i.toHexString())).toEqual(['#ffaadd', '#ddffaa', '#aaddff']);
-  expect(c.tetrad().map(i => i.toHexString())).toEqual(['#ffaadd', '#fff6aa', '#aaffcc', '#aab2ff']);
-  expect(c.splitcomplement().map(i => i.toHexString())).toEqual(['#ffaadd', '#ffddaa', '#aaffff']);
-  expect(c.analogous().map(i => i.toHexString())).toEqual([
+  expect(c.gertTriadic().map(i => i.toHexString())).toEqual(['#ffaadd', '#ddffaa', '#aaddff']);
+  expect(c.getTetrad().map(i => i.toHexString())).toEqual(['#ffaadd', '#fff6aa', '#aaffcc', '#aab2ff']);
+  expect(c.getSplitComplement().map(i => i.toHexString())).toEqual(['#ffaadd', '#b2ffaa', '#aafff6']);
+  expect(c.getAnalogous().map(i => i.toHexString())).toEqual([
     '#ffaadd',
     '#ffaaff',
     '#ffaaee',
@@ -208,7 +209,7 @@ test('test color combination', () => {
     '#ffaacc',
     '#ffaabb',
   ]);
-  expect(c.monochromatic().map(i => i.toHexString())).toEqual([
+  expect(c.getMonochromatic().map(i => i.toHexString())).toEqual([
     '#ffaadd',
     '#2a1c25',
     '#55394a',
@@ -216,7 +217,7 @@ test('test color combination', () => {
     '#aa7193',
     '#d48eb8',
   ]);
-  expect(d.monochromatic().map(i => i.toHexString())).toEqual([
+  expect(d.getMonochromatic().map(i => i.toHexString())).toEqual([
     '#ff0000',
     '#2a0000',
     '#550000',
